@@ -22,3 +22,5 @@ dist/
 
 # Docker
 *.log
+backend/.env
+frontend/.env
