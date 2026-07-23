@@ -1,36 +1,45 @@
 @import "tailwindcss";
-@config "../tailwind.config.js";
 
-/* ─── Global resets ─── */
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 body {
-  @apply bg-white text-gray-900 font-sans antialiased;
-  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s, color 0.2s;
 }
 
-/* App pages (authenticated) stay dark */
-body.app-mode {
-  @apply bg-slate-950 text-slate-100;
-}
-
-/* ─── Custom scrollbar ─── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(100,116,139,0.4); border-radius: 9999px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(100,116,139,0.7); }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-/* ─── Dark-mode app glassmorphism (used in authenticated pages) ─── */
 @layer components {
+  /* Used in authenticated dark app pages only */
   .glass-panel {
-    @apply bg-slate-900/70 backdrop-blur-xl border border-slate-800/80 shadow-xl;
+    background-color: rgb(15 23 42 / 0.7);
+    backdrop-filter: blur(24px);
+    border-width: 1px;
+    border-color: rgb(30 41 59 / 0.8);
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
   }
   .glass-card {
-    @apply bg-slate-900/50 backdrop-blur-md border border-slate-800/60 transition-all duration-200 hover:border-slate-700/80 hover:shadow-lg;
+    background-color: rgb(15 23 42 / 0.5);
+    backdrop-filter: blur(12px);
+    border-width: 1px;
+    border-color: rgb(30 41 59 / 0.6);
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 200ms;
+  }
+  .glass-card:hover {
+    border-color: rgb(51 65 85 / 0.8);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   }
   .gradient-text {
-    @apply bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent;
+    background-image: linear-gradient(to right, #34d399, #5eead4, #22d3ee);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
 }

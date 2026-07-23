@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { GraduationCap, CheckCircle2, Clock, Sparkles } from 'lucide-react';
+import { GraduationCap, CheckCircle2, Clock, Sparkles, BookOpen } from 'lucide-react';
 import { api } from '../services/api';
 import type { LearningModule } from '../types';
 import { useNavigate } from 'react-router-dom';
@@ -44,20 +44,20 @@ export const LearningCenterPage: React.FC = () => {
   };
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8">
+    <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Financial Literacy Academy</h1>
-          <p className="text-xs text-slate-400">
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Financial Literacy Academy</h1>
+          <p className="text-xs font-semibold text-slate-500 mt-1">
             Structured bite-sized modules teaching budgeting, emergency funds, ETFs, and taxes
           </p>
         </div>
         <button
           onClick={() => navigate('/ai')}
-          className="px-4 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center gap-1.5 transition-all"
+          className="px-4 py-2.5 rounded-2xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-600 text-xs font-bold flex items-center gap-2 transition-all shadow-xs"
         >
-          <Sparkles className="w-3.5 h-3.5" />
+          <Sparkles className="w-4 h-4 text-blue-600" />
           <span>Ask AI Tutor to Explain a Lesson</span>
         </button>
       </div>
@@ -70,59 +70,73 @@ export const LearningCenterPage: React.FC = () => {
           </div>
 
           {loading ? (
-            <div className="p-6 text-slate-400 text-sm">Loading curriculum...</div>
+            <div className="p-6 text-slate-400 text-sm font-medium">Loading curriculum...</div>
           ) : (
             modules.map((m) => (
               <div
                 key={m.id}
                 onClick={() => setSelectedModule(m)}
-                className={`p-4 rounded-2xl border cursor-pointer transition-all duration-200 ${
+                className={`p-5 rounded-2xl border cursor-pointer transition-all duration-200 ${
                   selectedModule?.id === m.id
-                    ? 'bg-slate-800/90 border-emerald-500/50 shadow-md'
-                    : 'glass-card'
+                    ? 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-600/20'
+                    : 'bg-white/90 backdrop-blur-xl border-slate-200/80 hover:border-blue-300 shadow-sm hover:shadow-md'
                 }`}
               >
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-emerald-400 border border-slate-700">
+                <div className="flex items-center justify-between mb-2">
+                  <span className={`text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider ${
+                    selectedModule?.id === m.id
+                      ? 'bg-white/20 text-white'
+                      : 'bg-blue-50 text-blue-600 border border-blue-100'
+                  }`}>
                     {m.category}
                   </span>
-                  <div className="flex items-center gap-1.5 text-xs text-slate-400">
-                    <Clock className="w-3 h-3" />
+                  <div className={`flex items-center gap-1.5 text-xs font-bold ${
+                    selectedModule?.id === m.id ? 'text-blue-100' : 'text-slate-400'
+                  }`}>
+                    <Clock className="w-3.5 h-3.5" />
                     <span>{m.duration_minutes}m</span>
                     {m.completed && (
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 ml-1" />
+                      <CheckCircle2 className={`w-4 h-4 ml-1 ${
+                        selectedModule?.id === m.id ? 'text-white' : 'text-emerald-500'
+                      }`} />
                     )}
                   </div>
                 </div>
 
-                <div className="font-bold text-white text-sm">{m.title}</div>
-                <div className="text-xs text-slate-400 mt-1 line-clamp-2">{m.summary}</div>
+                <div className={`font-black text-base ${selectedModule?.id === m.id ? 'text-white' : 'text-slate-900'}`}>
+                  {m.title}
+                </div>
+                <div className={`text-xs mt-1.5 line-clamp-2 leading-relaxed font-medium ${
+                  selectedModule?.id === m.id ? 'text-blue-100' : 'text-slate-500'
+                }`}>
+                  {m.summary}
+                </div>
               </div>
             ))
           )}
         </div>
 
         {/* Selected Module Reader View */}
-        <div className="lg:col-span-2 glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-6">
+        <div className="lg:col-span-2 bg-white/90 backdrop-blur-xl p-6 sm:p-10 rounded-[2rem] border border-slate-200/80 shadow-xl shadow-slate-200/40 space-y-6">
           {selectedModule ? (
             <>
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
                 <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-bold text-emerald-400">{selectedModule.category}</span>
-                    <span className="text-slate-600">•</span>
-                    <span className="text-xs text-slate-400">{selectedModule.level}</span>
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">{selectedModule.category}</span>
+                    <span className="text-slate-300">•</span>
+                    <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">{selectedModule.level}</span>
                   </div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-white">{selectedModule.title}</h2>
+                  <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">{selectedModule.title}</h2>
                 </div>
 
                 <button
                   onClick={() => handleCompleteModule(selectedModule.id)}
                   disabled={selectedModule.completed}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+                  className={`px-5 py-2.5 rounded-2xl text-xs font-bold flex items-center gap-2 transition-all ${
                     selectedModule.completed
-                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 cursor-default'
-                      : 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 shadow-glow-emerald hover:opacity-90'
+                      ? 'bg-emerald-50 text-emerald-600 border border-emerald-200 cursor-default'
+                      : 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20 hover:shadow-xl hover:shadow-blue-600/30'
                   }`}
                 >
                   <CheckCircle2 className="w-4 h-4" />
@@ -130,30 +144,32 @@ export const LearningCenterPage: React.FC = () => {
                 </button>
               </div>
 
-              {/* Markdown content area */}
-              <div className="prose prose-invert max-w-none space-y-4 text-sm text-slate-300 leading-relaxed">
+              {/* Lesson area */}
+              <div className="space-y-4 text-sm text-slate-700 leading-relaxed font-medium">
                 {selectedModule.content.split('\n\n').map((para, i) => {
                   if (para.startsWith('### ')) {
                     return (
-                      <h3 key={i} className="text-lg font-bold text-white pt-2">
+                      <h3 key={i} className="text-xl font-black text-slate-900 pt-4 tracking-tight">
                         {para.replace('### ', '')}
                       </h3>
                     );
                   }
-                  return <p key={i}>{para}</p>;
+                  return <p key={i} className="text-slate-600 text-[15px] leading-relaxed">{para}</p>;
                 })}
               </div>
 
               {/* Actionable Takeaways Checklist */}
-              <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3">
-                <div className="flex items-center gap-2 text-xs font-bold text-emerald-400 uppercase tracking-wider">
-                  <GraduationCap className="w-4 h-4" />
+              <div className="p-6 rounded-2xl bg-blue-50/60 border border-blue-100 space-y-3">
+                <div className="flex items-center gap-2 text-xs font-black text-blue-700 uppercase tracking-wider">
+                  <GraduationCap className="w-4.5 h-4.5 text-blue-600" />
                   <span>Key Actionable Student Takeaways</span>
                 </div>
-                <ul className="space-y-2">
+                <ul className="space-y-2.5">
                   {selectedModule.takeaways.map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-xs text-slate-300">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-700 font-medium">
+                      <div className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center shrink-0 mt-0.5">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
+                      </div>
                       <span>{item}</span>
                     </li>
                   ))}
@@ -161,8 +177,10 @@ export const LearningCenterPage: React.FC = () => {
               </div>
             </>
           ) : (
-            <div className="p-12 text-center text-slate-400 text-sm">
-              Select a module from the sidebar curriculum to start learning.
+            <div className="p-16 text-center space-y-3">
+              <BookOpen className="w-10 h-10 text-slate-300 mx-auto" />
+              <div className="text-slate-600 font-bold text-base">Select a module</div>
+              <p className="text-xs text-slate-400">Choose a curriculum topic from the left menu to start reading.</p>
             </div>
           )}
         </div>

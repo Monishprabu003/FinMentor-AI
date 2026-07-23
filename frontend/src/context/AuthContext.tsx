@@ -1,11 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { api } from '../services/api';
 import type { User } from '../types';
+import { signInWithGoogle } from '../services/firebaseAuth';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (email: string, pass: string) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
   register: (email: string, pass: string, fullName: string, experienceLevel: string) => Promise<void>;
   quickDemoLogin: () => Promise<void>;
   logout: () => void;
@@ -51,6 +53,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await fetchCurrentUser();
   };
 
+  const loginWithGoogle = async () => {
+    setLoading(true);
+    try {
+      const firebaseUser = await signInWithGoogle();
+      const idToken = await firebaseUser.getIdToken();
+      const res = await api.post('/auth/google', { token: idToken });
+      localStorage.setItem('finmentor_token', res.data.access_token);
+      await fetchCurrentUser();
+    } catch (error) {
+      console.error("Firebase Login Error", error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const register = async (
     email: string,
     password: string,
@@ -89,7 +107,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, login, register, quickDemoLogin, logout, refreshUser }}
+      value={{ user, loading, login, loginWithGoogle, register, quickDemoLogin, logout, refreshUser }}
     >
       {children}
     </AuthContext.Provider>

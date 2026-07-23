@@ -4,6 +4,15 @@ export interface User {
   full_name: string;
   experience_level: 'student' | 'graduate' | 'professional';
   monthly_income_target: number;
+  assessment_completed: boolean;
+  financial_score?: number;
+  knowledge_level?: string;
+  financial_persona?: string;
+  risk_profile?: string;
+  monthly_income?: number;
+  monthly_expenses?: number;
+  financial_goals?: string[];
+  assessment_answers?: Record<string, any>;
   created_at: string;
 }
 

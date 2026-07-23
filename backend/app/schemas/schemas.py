@@ -19,6 +19,13 @@ class UserUpdate(BaseModel):
 
 class UserResponse(UserBase):
     id: int
+    assessment_completed: bool
+    financial_score: Optional[int] = None
+    knowledge_level: Optional[str] = None
+    financial_persona: Optional[str] = None
+    risk_profile: Optional[str] = None
+    monthly_income: Optional[float] = None
+    monthly_expenses: Optional[float] = None
     created_at: datetime
 
     class Config:
@@ -30,6 +37,9 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     email: Optional[str] = None
+
+class GoogleLoginRequest(BaseModel):
+    token: str
 
 
 # Transaction Schemas

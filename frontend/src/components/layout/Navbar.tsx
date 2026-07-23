@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, User as UserIcon, LogOut } from 'lucide-react';
+import { Sparkles, User as UserIcon, LogOut, TrendingUp } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,19 +13,19 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="h-16 border-b border-slate-800/80 bg-slate-900/80 backdrop-blur-md sticky top-0 z-40 px-6 flex items-center justify-between">
+    <header className="h-16 border-b border-slate-200 bg-white/80 backdrop-blur-md sticky top-0 z-40 px-6 flex items-center justify-between shadow-xs">
       <div className="flex items-center gap-3">
-        <div 
+        <div
           onClick={() => navigate('/dashboard')}
           className="cursor-pointer flex items-center gap-2.5 font-bold text-xl tracking-tight"
         >
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-400 to-cyan-500 flex items-center justify-center shadow-glow-emerald">
-            <Sparkles className="w-5 h-5 text-slate-950" />
+          <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center shadow-md shadow-blue-600/20">
+            <TrendingUp className="w-5 h-5 text-white" strokeWidth={2.5} />
           </div>
-          <span className="text-white">
-            Fin<span className="gradient-text">Mentor</span>
+          <span className="text-slate-900 font-black">
+            Fin<span className="text-blue-600">Mentor</span>
           </span>
-          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-200">
             AI EDU
           </span>
         </div>
@@ -35,25 +35,25 @@ export const Navbar: React.FC = () => {
         {/* Quick AI Explainer Button */}
         <button
           onClick={() => navigate('/ai')}
-          className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-sm font-medium transition-all duration-200"
+          className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-600 text-sm font-semibold transition-all duration-200 shadow-xs"
         >
-          <Sparkles className="w-4 h-4 text-emerald-400" />
+          <Sparkles className="w-4 h-4 text-blue-600" />
           <span>Ask AI Tutor</span>
         </button>
 
         {user && (
-          <div className="flex items-center gap-3 pl-3 border-l border-slate-800">
+          <div className="flex items-center gap-3 pl-3 border-l border-slate-200">
             <div className="text-right hidden md:block">
-              <div className="text-sm font-semibold text-slate-200">{user.full_name}</div>
-              <div className="text-xs text-slate-400 capitalize">{user.experience_level} Account</div>
+              <div className="text-sm font-bold text-slate-800">{user.full_name}</div>
+              <div className="text-xs text-slate-400 font-medium capitalize">{user.experience_level} Account</div>
             </div>
-            <div className="w-9 h-9 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300">
+            <div className="w-9 h-9 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 font-bold">
               <UserIcon className="w-4 h-4" />
             </div>
             <button
               onClick={handleLogout}
               title="Logout"
-              className="p-2 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+              className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
             >
               <LogOut className="w-4 h-4" />
             </button>

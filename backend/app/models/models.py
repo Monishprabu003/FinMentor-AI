@@ -1,5 +1,5 @@
 from datetime import datetime, date
-from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey, Date, DateTime, Text
+from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey, Date, DateTime, Text, JSON
 from sqlalchemy.orm import relationship
 from app.database import Base
 
@@ -8,10 +8,23 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True, nullable=False)
-    hashed_password = Column(String, nullable=False)
+    hashed_password = Column(String, nullable=True) # Nullable for OAuth users
+    auth_provider = Column(String, default="local") # 'local' or 'google'
     full_name = Column(String, nullable=False)
     experience_level = Column(String, default="student")  # student | graduate | professional
     monthly_income_target = Column(Float, default=3200.0)
+    
+    # Financial Assessment Fields
+    assessment_completed = Column(Boolean, default=False)
+    financial_score = Column(Integer, nullable=True)
+    knowledge_level = Column(String, nullable=True)  # Beginner | Intermediate | Advanced
+    financial_persona = Column(String, nullable=True)
+    risk_profile = Column(String, nullable=True)     # Low | Medium | High
+    monthly_income = Column(Float, nullable=True)
+    monthly_expenses = Column(Float, nullable=True)
+    financial_goals = Column(JSON, nullable=True)
+    assessment_answers = Column(JSON, nullable=True)
+
     created_at = Column(DateTime, default=datetime.utcnow)
 
     transactions = relationship("Transaction", back_populates="user", cascade="all, delete-orphan")

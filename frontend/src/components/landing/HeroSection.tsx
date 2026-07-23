@@ -1,229 +1,348 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import {
-  TrendingUp, ShieldCheck, Sparkles, Target, Activity
+  TrendingUp, Sparkles, ArrowUpRight,
+  PieChart, ShieldCheck, Coins
 } from 'lucide-react';
 
-const DashboardMockup: React.FC = () => (
-  <div className="relative w-full max-w-md mx-auto">
-    {/* Main dashboard card */}
-    <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-      {/* Header bar */}
-      <div className="bg-gray-50 border-b border-gray-100 px-5 py-3.5 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
-          <div className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
-          <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
+/* ──────────────────────────────────────────────────────────────────────────
+   3D Tilt Container (React Bits style interactive 3D perspective stage)
+────────────────────────────────────────────────────────────────────────── */
+const Interactive3DStage: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  // Smooth springs for fluid 3D physics
+  const mouseXSpring = useSpring(x, { stiffness: 150, damping: 20 });
+  const mouseYSpring = useSpring(y, { stiffness: 150, damping: 20 });
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ['12deg', '-12deg']);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ['-14deg', '14deg']);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    const xPct = mouseX / width - 0.5;
+    const yPct = mouseY / height - 0.5;
+    x.set(xPct);
+    y.set(yPct);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <div
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className="relative flex items-center justify-center cursor-pointer select-none"
+      style={{ perspective: 1200, width: 460, height: 540 }}
+    >
+      <motion.div
+        style={{
+          rotateX,
+          rotateY,
+          transformStyle: 'preserve-3d',
+        }}
+        className="relative w-full h-full flex items-center justify-center"
+      >
+        {children}
+      </motion.div>
+    </div>
+  );
+};
+
+/* ──────────────────────────────────────────────────────────────────────────
+   3D Floating Finance Card 1: Central FinMentor Cobalt Wealth Card
+────────────────────────────────────────────────────────────────────────── */
+const CobaltWealthCard: React.FC = () => (
+  <motion.div
+    style={{ transform: 'translateZ(30px)' }}
+    className="relative w-[320px] bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950 rounded-[28px] p-6 shadow-2xl border border-slate-800/80 overflow-hidden text-white"
+  >
+    {/* Holographic metallic shine overlay */}
+    <div
+      className="absolute -right-20 -top-20 w-64 h-64 rounded-full pointer-events-none opacity-25 blur-3xl"
+      style={{ background: 'radial-gradient(circle, #60A5FA 0%, transparent 70%)' }}
+    />
+
+    {/* Top Header & Chip */}
+    <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center gap-2">
+        <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center shadow-sm">
+          <TrendingUp className="w-4 h-4 text-white" strokeWidth={2.5} />
         </div>
-        <span className="text-[11px] font-medium text-gray-400">FinMentor Dashboard</span>
-        <div className="w-16" />
+        <span className="text-[13px] font-black tracking-wider uppercase text-blue-200">FinMentor Infinite</span>
       </div>
 
-      {/* Dashboard Content */}
-      <div className="p-5 space-y-4">
-        {/* Health Score Row */}
-        <div className="flex items-center justify-between p-4 bg-blue-50 rounded-xl border border-blue-100">
-          <div>
-            <p className="text-[11px] text-blue-500 font-semibold uppercase tracking-wide">Financial Health Score</p>
-            <p className="text-3xl font-bold text-blue-700 mt-0.5">82 <span className="text-base font-medium text-blue-400">/ 100</span></p>
-          </div>
-          <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
-            <Activity className="w-6 h-6 text-blue-600" />
-          </div>
-        </div>
-
-        {/* Monthly Stats */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="p-3.5 rounded-xl border border-gray-100 bg-gray-50">
-            <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wide">Monthly Spend</p>
-            <p className="text-xl font-bold text-gray-800 mt-1">₹24,600</p>
-            <p className="text-[10px] text-green-500 font-medium mt-0.5">↓ 8% vs last month</p>
-          </div>
-          <div className="p-3.5 rounded-xl border border-gray-100 bg-gray-50">
-            <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wide">Savings</p>
-            <p className="text-xl font-bold text-gray-800 mt-1">₹12,400</p>
-            <p className="text-[10px] text-blue-500 font-medium mt-0.5">↑ 20% savings rate</p>
-          </div>
-        </div>
-
-        {/* Savings Goal Bar */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <Target className="w-3.5 h-3.5 text-violet-500" />
-              <p className="text-[11px] font-semibold text-gray-600">Emergency Fund Goal</p>
-            </div>
-            <span className="text-[11px] font-bold text-violet-600">68%</span>
-          </div>
-          <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-            <div className="h-full w-[68%] bg-violet-500 rounded-full" />
-          </div>
-          <p className="text-[10px] text-gray-400">₹68,000 of ₹1,00,000 saved</p>
-        </div>
-
-        {/* Budget Pills */}
-        <div>
-          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide mb-2">Budget Overview</p>
-          <div className="space-y-1.5">
-            {[
-              { label: 'Housing', pct: 52, color: 'bg-blue-400' },
-              { label: 'Food & Dining', pct: 78, color: 'bg-amber-400' },
-              { label: 'Transport', pct: 40, color: 'bg-green-400' },
-            ].map((item) => (
-              <div key={item.label} className="flex items-center gap-3">
-                <p className="text-[10px] w-24 text-gray-500 font-medium">{item.label}</p>
-                <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                  <div className={`h-full ${item.color} rounded-full`} style={{ width: `${item.pct}%` }} />
-                </div>
-                <span className="text-[10px] text-gray-400 w-6 text-right">{item.pct}%</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* AI Recommendation Card */}
-        <div className="p-3.5 rounded-xl bg-gradient-to-r from-violet-50 to-blue-50 border border-violet-100">
-          <div className="flex items-start gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-violet-100 flex items-center justify-center shrink-0 mt-0.5">
-              <Sparkles className="w-3.5 h-3.5 text-violet-600" />
-            </div>
-            <div>
-              <p className="text-[10px] font-bold text-violet-600 uppercase tracking-wide">AI Insight</p>
-              <p className="text-[11px] text-gray-600 mt-0.5 leading-relaxed">
-                You spent 22% more on dining this week. Consider cooking at home 3× to hit your savings goal by August.
-              </p>
-            </div>
-          </div>
-        </div>
+      {/* EMV Metallic Chip */}
+      <div className="w-10 h-7 rounded-md bg-gradient-to-tr from-amber-200 via-yellow-400 to-amber-500 border border-yellow-300/60 shadow-inner flex items-center justify-center">
+        <div className="w-6 h-4 border border-amber-800/30 rounded-sm grid grid-cols-2 gap-0.5" />
       </div>
     </div>
 
-    {/* Floating stat cards */}
-    <motion.div
-      animate={{ y: [0, -6, 0] }}
-      transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
-      className="absolute -left-10 top-1/3 bg-white rounded-xl shadow-lg border border-gray-100 px-4 py-3 hidden lg:block"
-    >
-      <div className="flex items-center gap-2.5">
-        <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
-          <TrendingUp className="w-4 h-4 text-green-500" />
-        </div>
-        <div>
-          <p className="text-[10px] text-gray-400">Net Worth</p>
-          <p className="text-sm font-bold text-gray-800">₹3.6L</p>
-        </div>
+    {/* Balance & Performance */}
+    <div className="space-y-1 mb-7">
+      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Net Wealth Portfolio</p>
+      <div className="flex items-baseline gap-2.5">
+        <span className="text-3xl font-black tracking-tight">₹14,28,500</span>
+        <span className="inline-flex items-center gap-0.5 text-[11px] font-extrabold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+          +24.8% CAGR
+        </span>
       </div>
-    </motion.div>
+    </div>
 
-    <motion.div
-      animate={{ y: [0, 6, 0] }}
-      transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-      className="absolute -right-8 bottom-1/4 bg-white rounded-xl shadow-lg border border-gray-100 px-4 py-3 hidden lg:block"
-    >
-      <div className="flex items-center gap-2.5">
-        <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
-          <ShieldCheck className="w-4 h-4 text-blue-500" />
-        </div>
-        <div>
-          <p className="text-[10px] text-gray-400">Streak</p>
-          <p className="text-sm font-bold text-gray-800">32 days 🔥</p>
-        </div>
+    {/* Asset Breakdown Bar */}
+    <div className="space-y-2 mb-6">
+      <div className="flex items-center justify-between text-[11px] font-semibold text-slate-300">
+        <span>Asset Allocation</span>
+        <span className="text-blue-400 font-bold">Optimal 50/30/20</span>
       </div>
-    </motion.div>
-  </div>
+      <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden flex gap-0.5">
+        <div className="h-full bg-blue-500 rounded-l-full" style={{ width: '50%' }} />
+        <div className="h-full bg-indigo-400" style={{ width: '30%' }} />
+        <div className="h-full bg-emerald-400 rounded-r-full" style={{ width: '20%' }} />
+      </div>
+    </div>
+
+    {/* Bottom Footer */}
+    <div className="flex items-center justify-between pt-4 border-t border-slate-800/80 text-[11px]">
+      <span className="font-mono text-slate-400 tracking-widest">•••• •••• •••• 8842</span>
+      <span className="font-bold text-blue-300 flex items-center gap-1">
+        <ShieldCheck className="w-3.5 h-3.5 text-blue-400" /> Insured Portfolio
+      </span>
+    </div>
+  </motion.div>
 );
 
+/* ──────────────────────────────────────────────────────────────────────────
+   3D Floating Finance Badge 1: AI Portfolio Guardian (Top Left)
+────────────────────────────────────────────────────────────────────────── */
+const AIPortfolioGuardianBadge: React.FC = () => (
+  <motion.div
+    style={{ transform: 'translateZ(75px)' }}
+    animate={{ y: [0, -6, 0] }}
+    transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+    className="absolute -top-4 -left-6 bg-white rounded-2xl shadow-xl border border-gray-100/90 p-3.5 flex items-center gap-3.5 min-w-[210px]"
+  >
+    <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
+      <PieChart className="w-5 h-5 text-blue-600" />
+    </div>
+    <div>
+      <div className="flex items-center gap-1.5">
+        <p className="text-[11px] font-black text-slate-900 uppercase tracking-wider">AI Portfolio Guardian</p>
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+      </div>
+      <p className="text-[11px] text-slate-500 font-medium">Auto-rebalancing active</p>
+    </div>
+  </motion.div>
+);
 
-interface HeroSectionProps {
+/* ──────────────────────────────────────────────────────────────────────────
+   3D Floating Finance Badge 2: SIP Compound Growth Engine (Top Right)
+────────────────────────────────────────────────────────────────────────── */
+const SIPCompoundBadge: React.FC = () => (
+  <motion.div
+    style={{ transform: 'translateZ(95px)' }}
+    animate={{ y: [0, 6, 0] }}
+    transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 0.7 }}
+    className="absolute top-16 -right-10 bg-white rounded-2xl shadow-xl border border-gray-100/90 p-3.5 flex items-center gap-3.5 min-w-[215px]"
+  >
+    <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0">
+      <TrendingUp className="w-5 h-5 text-indigo-600" />
+    </div>
+    <div>
+      <p className="text-[11px] font-black text-slate-900 uppercase tracking-wider">SIP Compound Engine</p>
+      <p className="text-[12px] font-extrabold text-blue-600">₹10k/mo → ₹1.42 Cr</p>
+    </div>
+  </motion.div>
+);
+
+/* ──────────────────────────────────────────────────────────────────────────
+   3D Floating Finance Badge 3: Smart Tax Shield Section 80C (Bottom Right)
+────────────────────────────────────────────────────────────────────────── */
+const TaxShieldBadge: React.FC = () => (
+  <motion.div
+    style={{ transform: 'translateZ(65px)' }}
+    animate={{ y: [0, -5, 0] }}
+    transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1.2 }}
+    className="absolute -bottom-6 -right-6 bg-white rounded-2xl shadow-xl border border-gray-100/90 p-3.5 flex items-center gap-3.5 min-w-[210px]"
+  >
+    <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
+      <ShieldCheck className="w-5 h-5 text-emerald-600" />
+    </div>
+    <div>
+      <p className="text-[11px] font-black text-slate-900 uppercase tracking-wider">Tax Shield · 80C & ELSS</p>
+      <p className="text-[11px] text-emerald-600 font-bold">+₹46,800 Saved This Year</p>
+    </div>
+  </motion.div>
+);
+
+/* ──────────────────────────────────────────────────────────────────────────
+   3D Floating Finance Badge 4: 3D Isometric Rupee Coin Medallion (Bottom Left)
+────────────────────────────────────────────────────────────────────────── */
+const RupeeCoinMedallion: React.FC = () => (
+  <motion.div
+    style={{ transform: 'translateZ(85px)' }}
+    animate={{ y: [0, 5, 0], rotateZ: [0, 3, 0] }}
+    transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }}
+    className="absolute bottom-12 -left-8 bg-white rounded-2xl shadow-xl border border-gray-100/90 p-3 flex items-center gap-3"
+  >
+    <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-md shadow-blue-200">
+      <Coins className="w-4 h-4 text-white" />
+    </div>
+    <div>
+      <p className="text-[11px] font-black text-slate-900 leading-none">Instant Expense Sync</p>
+      <p className="text-[10px] text-slate-400 mt-0.5">Zero-latency categorization</p>
+    </div>
+  </motion.div>
+);
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Hero Section Component
+────────────────────────────────────────────────────────────────────────── */
+interface HeroProps {
   onGetStarted: () => void;
   onExplore: () => void;
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({ onGetStarted, onExplore }) => (
-  <section className="min-h-screen pt-28 pb-20 bg-white flex items-center overflow-hidden">
-    <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center w-full">
-      {/* Text */}
-      <div className="space-y-7">
+export const HeroSection: React.FC<HeroProps> = ({ onGetStarted, onExplore }) => (
+  <section className="relative min-h-screen bg-white overflow-hidden flex items-center pt-16">
+    {/* Grid texture */}
+    <div
+      className="absolute inset-0 pointer-events-none"
+      style={{
+        backgroundImage: 'linear-gradient(#e2e8f0 1px,transparent 1px),linear-gradient(90deg,#e2e8f0 1px,transparent 1px)',
+        backgroundSize: '44px 44px',
+        opacity: 0.45,
+      }}
+    />
+    {/* Soft white fade vignette */}
+    <div
+      className="absolute inset-0 pointer-events-none"
+      style={{
+        background: 'radial-gradient(ellipse 80% 70% at 50% 50%,transparent 30%,rgba(255,255,255,0.9) 100%)',
+      }}
+    />
+    {/* Subtle blue ambient glow */}
+    <div
+      className="absolute right-0 top-1/4 w-[520px] h-[520px] pointer-events-none"
+      style={{
+        background: 'radial-gradient(circle, rgba(219,234,254,0.65) 0%, transparent 70%)',
+      }}
+    />
+
+    <div className="relative z-10 max-w-7xl mx-auto px-6 py-24 grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-16 items-center w-full">
+      {/* ── Left Text Column ── */}
+      <div className="max-w-xl space-y-8">
+        {/* Eyebrow */}
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, delay: 0 }}
-          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-xs font-semibold"
+          transition={{ duration: 0.4 }}
+          className="inline-flex items-center gap-2.5 bg-white border border-blue-100 shadow-sm rounded-2xl px-4 py-2"
         >
-          <Sparkles className="w-3.5 h-3.5" />
-          AI-Powered Financial OS
+          <div className="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center">
+            <Sparkles className="w-3 h-3 text-white" />
+          </div>
+          <span className="text-[11px] font-black text-blue-600 uppercase tracking-widest">AI-Powered Finance</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-blue-400 inline-block" />
+          <span className="text-[11px] text-slate-400 font-medium">Next-Gen Wealth OS</span>
         </motion.div>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, delay: 0.1 }}
-          className="text-5xl lg:text-6xl font-bold text-gray-900 leading-[1.12] tracking-tight"
-        >
-          Master your money{' '}
-          <span className="text-blue-600">with AI.</span>
-        </motion.h1>
+        {/* Headline */}
+        <div className="space-y-1">
+          {[
+            { text: 'Track.', color: 'text-slate-900', delay: 0.08 },
+            { text: 'Invest.', color: 'text-blue-600', delay: 0.16 },
+            { text: 'Succeed.', color: 'text-slate-900', delay: 0.24 },
+          ].map(({ text, color, delay }) => (
+            <motion.h1
+              key={text}
+              initial={{ opacity: 0, x: -24 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay, ease: 'easeOut' }}
+              className={`text-[68px] sm:text-[80px] font-black leading-[0.95] tracking-tight ${color}`}
+            >
+              {text}
+            </motion.h1>
+          ))}
+        </div>
 
+        {/* Subheading */}
         <motion.p
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, delay: 0.2 }}
-          className="text-lg text-gray-500 leading-relaxed max-w-lg"
+          transition={{ duration: 0.45, delay: 0.35 }}
+          className="text-[16px] text-slate-500 leading-relaxed"
         >
-          Track expenses, build wealth, learn finance, and receive personalized AI guidance—all in one intelligent platform.
+          The premium financial ecosystem for students and young professionals. Track expenses, simulate SIP growth, and receive personalised AI guidance—all in one intelligent platform.
         </motion.p>
 
+        {/* CTAs */}
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, delay: 0.3 }}
-          className="flex flex-col sm:flex-row gap-3"
+          transition={{ duration: 0.45, delay: 0.43 }}
+          className="flex flex-wrap gap-3"
         >
           <button
             onClick={onGetStarted}
-            className="px-6 py-3.5 text-[14px] font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors duration-150 shadow-sm shadow-blue-200"
+            className="flex items-center gap-2 px-7 py-3.5 text-[14px] font-bold text-white bg-slate-900 hover:bg-slate-800 rounded-2xl transition-colors shadow-md"
           >
-            Start Free →
+            Go to Dashboard
+            <ArrowUpRight className="w-4 h-4" />
           </button>
           <button
             onClick={onExplore}
-            className="px-6 py-3.5 text-[14px] font-semibold text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl transition-colors duration-150"
+            className="px-7 py-3.5 text-[14px] font-semibold text-slate-700 bg-white border border-gray-200 hover:border-blue-200 hover:text-blue-600 rounded-2xl transition-all"
           >
-            Explore Platform
+            Explore Features
           </button>
         </motion.div>
 
+        {/* Social proof */}
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, delay: 0.4 }}
-          className="flex items-center gap-6 pt-2"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.52 }}
+          className="flex items-center gap-4"
         >
-          <div className="flex -space-x-2">
-            {['SK', 'PR', 'AM', 'VR'].map((initials) => (
+          <div className="flex -space-x-2.5">
+            {['#2563EB', '#3B82F6', '#60A5FA', '#93C5FD', '#BFDBFE'].map((bg, i) => (
               <div
-                key={initials}
-                className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-violet-500 border-2 border-white flex items-center justify-center"
+                key={i}
+                className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-[9px] font-bold text-white"
+                style={{ background: bg }}
               >
-                <span className="text-[9px] font-bold text-white">{initials}</span>
+                {['SK', 'PA', 'RM', 'AK', 'VN'][i]}
               </div>
             ))}
           </div>
-          <p className="text-[13px] text-gray-500">
-            Joined by <span className="font-semibold text-gray-700">10,000+</span> users
+          <p className="text-[13px] text-slate-500">
+            Joined by <span className="font-black text-slate-900">10,000+</span> users across India
           </p>
         </motion.div>
       </div>
 
-      {/* Dashboard Mockup */}
-      <motion.div
-        initial={{ opacity: 0, x: 40 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.7, delay: 0.3, ease: 'easeOut' }}
-        className="relative"
-      >
-        <DashboardMockup />
-      </motion.div>
+      {/* ── Right 3D Interactive Finance Showcase ── */}
+      <div className="hidden lg:flex items-center justify-center">
+        <Interactive3DStage>
+          {/* Central 3D Cobalt Wealth Card */}
+          <CobaltWealthCard />
+
+          {/* 4 Finance-Oriented Floating Isometric Elements */}
+          <AIPortfolioGuardianBadge />
+          <SIPCompoundBadge />
+          <TaxShieldBadge />
+          <RupeeCoinMedallion />
+        </Interactive3DStage>
+      </div>
     </div>
   </section>
 );
