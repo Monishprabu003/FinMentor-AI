@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: finmentor-backend-api
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://finmentor:password@postgres:5432/finmentordb
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=super-secret-key-finmentor-ai-2026-enterprise-production
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: finmentor-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: finmentor
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: finmentordb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: finmentor-redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  nginx:
+    image: nginx:alpine
+    container_name: finmentor-nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:

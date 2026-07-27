@@ -1,10 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 
 import { LandingNavbar }      from '../components/landing/Navbar';
 import { HeroSection }        from '../components/landing/HeroSection';
-import { TrustSection }       from '../components/landing/TrustSection';
 import { FeaturesSection }    from '../components/landing/FeaturesSection';
 import { AIFeaturesSection }  from '../components/landing/AIFeaturesSection';
 import { WhySection }         from '../components/landing/WhySection';
@@ -17,12 +15,6 @@ import { LandingFooter }      from '../components/landing/LandingFooter';
 
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
-
-  if (user) {
-    navigate('/dashboard');
-    return null;
-  }
 
   const goLogin    = () => navigate('/login');
   const goSignup   = () => navigate('/signup');
@@ -38,7 +30,6 @@ export const LandingPage: React.FC = () => {
         onExplore={() => scrollTo('features')}
       />
 
-      <TrustSection />
       <FeaturesSection />
       <AIFeaturesSection />
       <WhySection />

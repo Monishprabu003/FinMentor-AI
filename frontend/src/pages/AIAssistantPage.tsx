@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bot, Send, ShieldCheck, Sparkles, User as UserIcon } from 'lucide-react';
+import { Bot, Send, ShieldCheck } from 'lucide-react';
 import { api } from '../services/api';
 import type { SpendingInsight, ConceptExplanation } from '../types';
 

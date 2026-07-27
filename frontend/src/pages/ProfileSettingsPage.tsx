@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Save, Check, User } from 'lucide-react';
+import { Save, Check } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 

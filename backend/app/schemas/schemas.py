@@ -26,6 +26,8 @@ class UserResponse(UserBase):
     risk_profile: Optional[str] = None
     monthly_income: Optional[float] = None
     monthly_expenses: Optional[float] = None
+    financial_goals: Optional[list] = None
+    assessment_answers: Optional[dict] = None
     created_at: datetime
 
     class Config:

@@ -1,7 +1,7 @@
 from datetime import datetime, date
 from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey, Date, DateTime, Text, JSON
 from sqlalchemy.orm import relationship
-from app.database import Base
+from app.core.database import Base
 
 class User(Base):
     __tablename__ = "users"
@@ -11,19 +11,26 @@ class User(Base):
     hashed_password = Column(String, nullable=True) # Nullable for OAuth users
     auth_provider = Column(String, default="local") # 'local' or 'google'
     full_name = Column(String, nullable=False)
-    experience_level = Column(String, default="student")  # student | graduate | professional
+    experience_level = Column(String, default="student") # student | graduate | professional
     monthly_income_target = Column(Float, default=3200.0)
     
     # Financial Assessment Fields
     assessment_completed = Column(Boolean, default=False)
     financial_score = Column(Integer, nullable=True)
-    knowledge_level = Column(String, nullable=True)  # Beginner | Intermediate | Advanced
+    knowledge_level = Column(String, nullable=True) # Beginner | Intermediate | Advanced
     financial_persona = Column(String, nullable=True)
-    risk_profile = Column(String, nullable=True)     # Low | Medium | High
+    risk_profile = Column(String, nullable=True) # Low | Medium | High
     monthly_income = Column(Float, nullable=True)
     monthly_expenses = Column(Float, nullable=True)
     financial_goals = Column(JSON, nullable=True)
     assessment_answers = Column(JSON, nullable=True)
+
+    # Gamification & XP Engine
+    xp = Column(Integer, default=3450)
+    level = Column(Integer, default=8)
+    level_title = Column(String, default="Financial Strategist")
+    streak_days = Column(Integer, default=14)
+    last_login_date = Column(Date, default=date.today)
 
     created_at = Column(DateTime, default=datetime.utcnow)
 
@@ -31,6 +38,8 @@ class User(Base):
     budgets = relationship("Budget", back_populates="user", cascade="all, delete-orphan")
     savings_goals = relationship("SavingsGoal", back_populates="user", cascade="all, delete-orphan")
     learning_progress = relationship("LearningProgress", back_populates="user", cascade="all, delete-orphan")
+    user_badges = relationship("UserBadge", back_populates="user", cascade="all, delete-orphan")
+    user_certificates = relationship("UserCertificate", back_populates="user", cascade="all, delete-orphan")
 
 
 class Transaction(Base):
@@ -40,7 +49,7 @@ class Transaction(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     title = Column(String, nullable=False)
     amount = Column(Float, nullable=False)
-    type = Column(String, nullable=False)  # "INCOME" or "EXPENSE"
+    type = Column(String, nullable=False) # "INCOME" or "EXPENSE"
     category = Column(String, nullable=False)
     date = Column(Date, default=date.today, nullable=False)
     notes = Column(Text, nullable=True)
@@ -56,7 +65,7 @@ class Budget(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     category = Column(String, nullable=False)
     monthly_limit = Column(Float, nullable=False)
-    alert_threshold = Column(Float, default=0.85)  # Warn when reaching 85%
+    alert_threshold = Column(Float, default=0.85) # Warn when reaching 85%
 
     user = relationship("User", back_populates="budgets")
 
@@ -70,7 +79,7 @@ class SavingsGoal(Base):
     target_amount = Column(Float, nullable=False)
     current_amount = Column(Float, default=0.0)
     target_date = Column(Date, nullable=True)
-    category = Column(String, default="Emergency Fund")  # Emergency Fund | Debt Payoff | Investing | Purchase | Education
+    category = Column(String, default="Emergency Fund")
 
     user = relationship("User", back_populates="savings_goals")
 
@@ -86,3 +95,50 @@ class LearningProgress(Base):
     completed_at = Column(DateTime, default=datetime.utcnow)
 
     user = relationship("User", back_populates="learning_progress")
+
+
+class UserBadge(Base):
+    __tablename__ = "user_badges"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    badge_id = Column(String, nullable=False)
+    badge_name = Column(String, nullable=False)
+    unlocked_at = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User", back_populates="user_badges")
+
+
+class UserCertificate(Base):
+    __tablename__ = "user_certificates"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    title = Column(String, nullable=False)
+    credential_id = Column(String, nullable=False, unique=True)
+    issue_date = Column(String, nullable=False)
+
+    user = relationship("User", back_populates="user_certificates")
+
+
+class AIConversation(Base):
+    __tablename__ = "ai_conversations"
+
+    id = Column(String, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    title = Column(String, nullable=False)
+    category = Column(String, default="General")
+    pinned = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class AIMessage(Base):
+    __tablename__ = "ai_messages"
+
+    id = Column(String, primary_key=True, index=True)
+    conversation_id = Column(String, ForeignKey("ai_conversations.id"), nullable=False, index=True)
+    sender = Column(String, nullable=False) # 'user' or 'ai'
+    text = Column(Text, nullable=False)
+    table_data = Column(JSON, nullable=True)
+    formula_code = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)

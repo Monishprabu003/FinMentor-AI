@@ -1,7 +1,8 @@
 import React from 'react';
-import { Sparkles, User as UserIcon, LogOut, TrendingUp } from 'lucide-react';
+import { Sparkles, User as UserIcon, LogOut, ClipboardCheck } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { Logo } from '../common/Logo';
 
 export const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
@@ -15,23 +16,22 @@ export const Navbar: React.FC = () => {
   return (
     <header className="h-16 border-b border-slate-200 bg-white/80 backdrop-blur-md sticky top-0 z-40 px-6 flex items-center justify-between shadow-xs">
       <div className="flex items-center gap-3">
-        <div
-          onClick={() => navigate('/dashboard')}
-          className="cursor-pointer flex items-center gap-2.5 font-bold text-xl tracking-tight"
-        >
-          <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center shadow-md shadow-blue-600/20">
-            <TrendingUp className="w-5 h-5 text-white" strokeWidth={2.5} />
-          </div>
-          <span className="text-slate-900 font-black">
-            Fin<span className="text-blue-600">Mentor</span>
-          </span>
-          <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-200">
-            AI EDU
-          </span>
-        </div>
+        <Logo size="sm" onClick={() => navigate('/dashboard')} />
+        <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-200">
+          AI OS
+        </span>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3 sm:gap-4">
+        {/* Take Financial Assessment Button */}
+        <button
+          onClick={() => navigate('/assessment')}
+          className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-sm font-semibold transition-all duration-200 shadow-xs"
+        >
+          <ClipboardCheck className="w-4 h-4 text-blue-600" />
+          <span>Take Financial Assessment</span>
+        </button>
+
         {/* Quick AI Explainer Button */}
         <button
           onClick={() => navigate('/ai')}

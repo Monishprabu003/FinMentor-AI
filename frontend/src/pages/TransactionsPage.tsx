@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, Search, Trash2, ArrowUpRight, ArrowDownRight, Receipt, Filter } from 'lucide-react';
+import { Plus, Search, Trash2, ArrowUpRight, ArrowDownRight, Receipt } from 'lucide-react';
 import { api } from '../services/api';
 import type { Transaction } from '../types';
 

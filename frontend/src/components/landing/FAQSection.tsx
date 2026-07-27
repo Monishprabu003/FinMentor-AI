@@ -1,63 +1,69 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Minus } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 
-const FAQS = [
-  { q: 'Is FinMentor free to use?', a: 'Yes! Core features—expense tracking, budget planner, savings goals, and the learning hub—are completely free. Premium AI features are free during beta.' },
-  { q: 'Is my financial data secure?', a: 'Absolutely. We use JWT authentication, bcrypt password hashing, and HTTPS encryption. Your data is stored on Neon PostgreSQL with strict access controls. We never share your data.' },
-  { q: 'Does the AI give financial advice?', a: 'No. The AI is a financial literacy educator, not an advisor. It explains concepts and teaches principles using your data, but never recommends specific securities or investment decisions.' },
-  { q: 'How is this different from other finance apps?', a: 'FinMentor is the only platform that combines expense tracking + smart budgeting + an interactive learning academy + an AI tutor in one product. Most apps only do one of these things.' },
-  { q: 'Can I connect my bank account?', a: 'Manual entry is fully supported today. Bank sync via Open Banking APIs is on our product roadmap and coming soon for supported Indian banks.' },
-  { q: 'What is the Financial Health Score?', a: 'A single number (0–100) computed by our deterministic backend engine based on your savings rate, budget adherence, emergency fund status, and goal progress. It updates live.' },
-];
+export const FAQSection: React.FC = () => {
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
 
-const Item: React.FC<{ faq: { q: string; a: string } }> = ({ faq }) => {
-  const [open, setOpen] = useState(false);
+  const faqs = [
+    {
+      q: 'How does FinMentor AI analyze my financial habits?',
+      a: 'FinMentor AI evaluates your transactions, income, and spending against proven financial frameworks like the 50/30/20 rule to give you instant recommendations.',
+    },
+    {
+      q: 'Is my financial data secure with FinMentor?',
+      a: 'Yes! We use end-to-end 256-bit encryption. Your data is stored securely and never shared with third parties.',
+    },
+    {
+      q: 'Can I track both monthly budgets and long-term investments?',
+      a: 'Absolutely. FinMentor tracks your daily expenses, monthly budget limits, as well as SIP wealth accumulation goals.',
+    },
+    {
+      q: 'Is FinMentor suitable for beginners?',
+      a: 'Yes, FinMentor provides simple, step-by-step guidance tailored for all experience levels.',
+    },
+  ];
+
   return (
-    <div className={`border-b border-gray-100 last:border-0 transition-colors ${open ? 'bg-blue-50/50' : ''}`}>
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between gap-4 py-5 px-1 text-left"
-      >
-        <span className={`text-[15px] font-bold transition-colors ${open ? 'text-blue-600' : 'text-slate-800'}`}>
-          {faq.q}
-        </span>
-        <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-colors ${open ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
-          {open ? <Minus className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
+    <section id="faq" className="py-20 bg-white">
+      <div className="max-w-4xl mx-auto px-6">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
+            Frequently Asked Questions
+          </h2>
+          <p className="text-slate-500 text-base">
+            Everything you need to know about FinMentor AI.
+          </p>
         </div>
-      </button>
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="overflow-hidden"
-          >
-            <p className="pb-5 px-1 text-[14px] text-slate-500 leading-relaxed">{faq.a}</p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+
+        <div className="space-y-4">
+          {faqs.map((faq, i) => {
+            const isOpen = openIndex === i;
+            return (
+              <div
+                key={i}
+                className="border border-slate-200 rounded-2xl overflow-hidden transition-colors"
+              >
+                <button
+                  onClick={() => setOpenIndex(isOpen ? null : i)}
+                  className="w-full flex items-center justify-between p-6 text-left font-bold text-slate-900 hover:bg-slate-50 transition-colors"
+                >
+                  <span>{faq.q}</span>
+                  <ChevronDown
+                    className={`w-5 h-5 text-slate-400 transition-transform ${
+                      isOpen ? 'rotate-180 text-blue-600' : ''
+                    }`}
+                  />
+                </button>
+                {isOpen && (
+                  <div className="px-6 pb-6 text-sm text-slate-500 leading-relaxed border-t border-slate-100 pt-4">
+                    {faq.a}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
   );
 };
-
-export const FAQSection: React.FC = () => (
-  <section id="faq" className="py-24 bg-slate-50 border-y border-gray-100">
-    <div className="max-w-3xl mx-auto px-6">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="text-center mb-14"
-      >
-        <p className="text-[11px] font-black text-blue-600 uppercase tracking-[0.2em] mb-3">FAQ</p>
-        <h2 className="text-4xl font-black text-slate-900 tracking-tight">Common questions, answered.</h2>
-      </motion.div>
-      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm px-8 py-2">
-        {FAQS.map((faq) => <Item key={faq.q} faq={faq} />)}
-      </div>
-    </div>
-  </section>
-);

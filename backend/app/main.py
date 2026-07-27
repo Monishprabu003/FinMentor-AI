@@ -1,19 +1,18 @@
+import os
 import firebase_admin
+from firebase_admin import credentials
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.config import settings
-from app.database import engine, Base, SessionLocal
-from app.routers import auth, transactions, budgets, savings, analytics, learn, ai, assessment
+
+from app.core.config import settings
+from app.core.database import engine, Base, SessionLocal
+from app.routers import auth, transactions, budgets, savings, analytics, learn, ai, assessment, gamification, notifications
 from app.data.demo_seeder import seed_demo_data
 
-import os
-from firebase_admin import credentials
-
-# Initialize Firebase Admin
+# Initialize Firebase Admin if credential exists
 try:
     firebase_admin.get_app()
 except ValueError:
-    # Use FIREBASE_CREDENTIALS from .env if present, otherwise fallback to default
     cred_path = os.getenv("FIREBASE_CREDENTIALS", "firebase-service-account.json")
     if os.path.exists(cred_path):
         cred = credentials.Certificate(cred_path)
@@ -21,19 +20,21 @@ except ValueError:
     else:
         firebase_admin.initialize_app()
 
-# Create tables if not existing
+# Create tables
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
-    openapi_url=f"{settings.API_V1_STR}/openapi.json"
+    openapi_url=f"{settings.API_V1_STR}/openapi.json",
+    docs_url="/docs",
+    redoc_url="/redoc",
 )
 
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all for seamless developer & demo experience
+    allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -42,12 +43,14 @@ app.add_middleware(
 # Include Routers
 app.include_router(auth.router, prefix=settings.API_V1_STR)
 app.include_router(assessment.router, prefix=settings.API_V1_STR)
+app.include_router(gamification.router, prefix=settings.API_V1_STR)
 app.include_router(transactions.router, prefix=settings.API_V1_STR)
 app.include_router(budgets.router, prefix=settings.API_V1_STR)
 app.include_router(savings.router, prefix=settings.API_V1_STR)
 app.include_router(analytics.router, prefix=settings.API_V1_STR)
 app.include_router(learn.router, prefix=settings.API_V1_STR)
 app.include_router(ai.router, prefix=settings.API_V1_STR)
+app.include_router(notifications.router, prefix=settings.API_V1_STR)
 
 @app.on_event("startup")
 def startup_event():
@@ -68,4 +71,8 @@ def root():
 
 @app.get(f"{settings.API_V1_STR}/health")
 def health_check():
-    return {"status": "healthy", "engine": "deterministic-finance + gemini-educational"}
+    return {
+        "status": "healthy",
+        "engine": "deterministic-finance + gemini-educational",
+        "database": "connected",
+    }

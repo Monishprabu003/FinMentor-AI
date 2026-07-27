@@ -14,6 +14,11 @@ alter_statements = [
     "ALTER TABLE users ADD COLUMN financial_goals JSON;",
     "ALTER TABLE users ADD COLUMN assessment_answers JSON;",
     "ALTER TABLE users ADD COLUMN auth_provider VARCHAR DEFAULT 'local';",
+    "ALTER TABLE users ADD COLUMN xp INTEGER DEFAULT 3450;",
+    "ALTER TABLE users ADD COLUMN level INTEGER DEFAULT 8;",
+    "ALTER TABLE users ADD COLUMN level_title VARCHAR DEFAULT 'Financial Strategist';",
+    "ALTER TABLE users ADD COLUMN streak_days INTEGER DEFAULT 14;",
+    "ALTER TABLE users ADD COLUMN last_login_date DATE;",
     # Note: SQLite doesn't easily support ALTER COLUMN to drop NOT NULL, 
     # but existing null inserts might just fail if strict mode is on. 
     # Since it's SQLite, we will rely on SQLAlchemy not inserting it, 
